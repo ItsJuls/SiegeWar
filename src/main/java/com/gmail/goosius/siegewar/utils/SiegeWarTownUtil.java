@@ -8,6 +8,8 @@ import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.TownyPermission.ActionType;
 import com.palmergames.bukkit.towny.object.TownyPermission.PermLevel;
 import com.palmergames.bukkit.towny.object.TownyPermissionChange.Action;
+import com.palmergames.bukkit.towny.object.PlotGroup;
+
 
 /**
  * Util class containing methods related to town flags/permssions.
@@ -54,10 +56,36 @@ public class SiegeWarTownUtil {
 	 * @param desiredSetting The value to set pvp and explosions to.
 	 */
 	public static void setTownFlags(Town town, boolean desiredSetting) {
-		if (town.getPermissions().pvp != desiredSetting && SiegeWarSettings.getWarSiegePvpAlwaysOnInBesiegedTowns())
-			town.getPermissions().pvp = desiredSetting;
-		if (town.getPermissions().explosion != desiredSetting && SiegeWarSettings.getWarSiegeExplosionsAlwaysOnInBesiegedTowns())
-			town.getPermissions().explosion = desiredSetting;
+		if(SiegeWarSettings.getWarSiegePvpAlwaysOnInBesiegedTowns()) {
+			if (town.getPermissions().pvp != desiredSetting)
+				town.getPermissions().pvp = desiredSetting;
+			for(TownBlock townBlock: town.getTownBlocks()) {
+				if (townBlock.getPermissions().pvp != desiredSetting)
+					townBlock.getPermissions().pvp = desiredSetting;
+			}
+			if(town.getPlotGroups() != null) {
+				for(PlotGroup plotGroup: town.getPlotGroups()) {
+					if (plotGroup.getPermissions().pvp != desiredSetting)
+						plotGroup.getPermissions().pvp = desiredSetting;
+				}
+			}
+		}
+
+		if(SiegeWarSettings.getWarSiegeExplosionsAlwaysOnInBesiegedTowns()) {
+			if (town.getPermissions().explosion != desiredSetting)
+				town.getPermissions().explosion = desiredSetting;
+			for(TownBlock townBlock: town.getTownBlocks()) {
+				if (townBlock.getPermissions().explosion != desiredSetting)
+					townBlock.getPermissions().explosion = desiredSetting;
+			}
+			if(town.getPlotGroups() != null) {
+				for(PlotGroup plotGroup: town.getPlotGroups()) {
+					if (plotGroup.getPermissions().explosion != desiredSetting)
+						plotGroup.getPermissions().explosion = desiredSetting;
+				}
+			}
+		}
+
 		town.save();
 	}
 }
