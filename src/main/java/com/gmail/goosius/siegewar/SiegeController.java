@@ -195,7 +195,6 @@ public class SiegeController {
 		townSiegeMap.remove(town.getUUID());
 		removeSiegedTown(siege);
 
-		//Set town pvp and explosions to false.
 		if(SiegeWarSettings.getWarSiegePvpAlwaysOnInBesiegedTowns())
 			SiegeWarTownUtil.setTownPvpFlags(town, false);
 		if(SiegeWarSettings.getWarSiegeExplosionsAlwaysOnInBesiegedTowns())
