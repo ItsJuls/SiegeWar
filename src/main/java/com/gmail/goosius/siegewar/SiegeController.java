@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.gmail.goosius.siegewar.utils.SiegeWarDistanceUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -194,7 +195,12 @@ public class SiegeController {
 		townSiegeMap.remove(town.getUUID());
 		removeSiegedTown(siege);
 
-		SiegeWarTownUtil.setTownFlags(town, false);
+		//Set town pvp and explosions to true.
+		if(SiegeWarSettings.getWarSiegePvpAlwaysOnInBesiegedTowns())
+			SiegeWarTownUtil.setTownPvpFlags(town, true);
+		if(SiegeWarSettings.getWarSiegeExplosionsAlwaysOnInBesiegedTowns())
+			SiegeWarTownUtil.setTownExplosionFlags(town, true);
+
 		//Save attacking nation
 		siege.getAttackingNation().save();
 		siege = null;
