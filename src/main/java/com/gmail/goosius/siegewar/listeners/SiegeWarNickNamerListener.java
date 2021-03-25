@@ -47,6 +47,9 @@ public class SiegeWarNickNamerListener implements Listener {
                 Resident receiverResident; //The player doing the looking
                 Resident targetResident; //The player being looked at
 
+
+                event.setNick(FRIEND_COLOR + event.getReceiver().getName());
+
                 //Get the siege side of the receiver player
                 receiverResident = TownyUniverse.getInstance().getResident(event.getReceiver().getUniqueId());
                 if (receiverResident.hasTown()) {
