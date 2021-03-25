@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public class SiegeWarAllegianceUtil {
 
     //Calculate the siege-side which a player is on
-    public static SiegeSide calculateSiegePlayerSide(Player deadPlayer, Town deadResidentTown, Siege siege) throws NotRegisteredException {
+    public static SiegeSide calculateSiegePlayerSide(Player player, Town deadResidentTown, Siege siege) throws NotRegisteredException {
 
         //Look for defender
         Government defendingGovernment = siege.getDefender();
@@ -21,12 +21,12 @@ public class SiegeWarAllegianceUtil {
             case CONQUEST:
             case SUPPRESSION:
                 //In the above sieges, defenders can be town guards
-                if (isTownGuard(deadPlayer, deadResidentTown, defendingGovernment))
+                if (isTownGuard(player, deadResidentTown, defendingGovernment))
                     return SiegeSide.DEFENDERS;
             case REVOLT:
             case LIBERATION:
                 //In the above sieges, defenders can be nation/allied soldiers
-                if (isNationSoldierOrAlliedSoldier(deadPlayer, deadResidentTown, defendingGovernment))
+                if (isNationSoldierOrAlliedSoldier(player, deadResidentTown, defendingGovernment))
                     return SiegeSide.DEFENDERS;
         }
 
@@ -35,13 +35,13 @@ public class SiegeWarAllegianceUtil {
         switch (siege.getSiegeType()) {
             case REVOLT:
                 //In the above sieges, attackers can be town guards
-                if (isTownGuard(deadPlayer, deadResidentTown, attackingGovernment))
+                if (isTownGuard(player, deadResidentTown, attackingGovernment))
                     return SiegeSide.ATTACKERS;
             case CONQUEST:
             case SUPPRESSION:
             case LIBERATION:
                 //In the above sieges, attackers can be nation/allied soldiers
-                if (isNationSoldierOrAlliedSoldier(deadPlayer, deadResidentTown, attackingGovernment))
+                if (isNationSoldierOrAlliedSoldier(player, deadResidentTown, attackingGovernment))
                     return SiegeSide.ATTACKERS;
         }
         return SiegeSide.NOBODY;

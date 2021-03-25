@@ -78,67 +78,43 @@ public class PlayerDeath {
 				&& !tps.testPermission(deadPlayer, SiegeWarPermissionNodes.SIEGEWAR_NATION_SIEGE_BATTLE_POINTS.getNode()))
 				return;
 
-			Town deadResidentTown = deadResident.getTown();
+			//Get nearest active siege
+			Siege nearestActiveSiege = SiegeController.getNearestActiveSiegeAt(deadPlayer.getLocation());
 
-			//Declare local variables
-			Siege confirmedCandidateSiege = null;
-			SiegeSide confirmedCandidateSiegePlayerSide = SiegeSide.NOBODY;
-			double confirmedCandidateDistanceToPlayer = 0;
-			double candidateSiegeDistanceToPlayer;
-			SiegeSide candidateSiegePlayerSide;
-
-			//Find nearest eligible siege
-			for (Siege candidateSiege : SiegeController.getSieges()) {
-
-				//Skip if siege is not active
-				if (!candidateSiege.getStatus().isActive())
-					return;
-
-				//Skip if player is not is siege-zone
-				if(!SiegeWarDistanceUtil.isInSiegeZone(deadPlayer, candidateSiege))
-					continue;
+			/*
+			 * Check if the player is an official participant in the siege.
+			 * If so, apply a siege point penalty & keep inventory with degrade.
+			 */
+			if (nearestActiveSiege != null) {
 
 				//Is player eligible ?
-				candidateSiegePlayerSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(deadPlayer, deadResidentTown, candidateSiege);
-
-				if(candidateSiegePlayerSide == SiegeSide.NOBODY)
-					continue;
-
-				//Confirm candidate siege if it is 1st viable one OR closer than confirmed candidate
-				candidateSiegeDistanceToPlayer = deadPlayer.getLocation().distance(candidateSiege.getFlagLocation());
-				if (confirmedCandidateSiege == null || candidateSiegeDistanceToPlayer < confirmedCandidateDistanceToPlayer) {
-					confirmedCandidateSiege = candidateSiege;
-					confirmedCandidateSiegePlayerSide = candidateSiegePlayerSide;
-					confirmedCandidateDistanceToPlayer = candidateSiegeDistanceToPlayer;
-				}
-			}
-
-			//If player is confirmed as close to one or more sieges in which they are eligible to be involved, 
-			// apply siege point penalty for the nearest one, and keep inventory
-			if (confirmedCandidateSiege != null) {
+				Town deadResidentTown = deadResident.getTown();
+				SiegeSide siegePlayerSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(deadPlayer, deadResidentTown, nearestActiveSiege);
+				if(siegePlayerSide == SiegeSide.NOBODY)
+					return;
 
 				//Award penalty points w/ notification if siege is in progress
-				if(confirmedCandidateSiege.getStatus() == SiegeStatus.IN_PROGRESS) {
+				if(nearestActiveSiege.getStatus() == SiegeStatus.IN_PROGRESS) {
 					if (SiegeWarSettings.getWarSiegeDeathSpawnFireworkEnabled()) {
-						if (isBannerMissing(confirmedCandidateSiege.getFlagLocation()))
-							replaceMissingBanner(confirmedCandidateSiege.getFlagLocation());
-						Color bannerColor = ((Banner) confirmedCandidateSiege.getFlagLocation().getBlock().getState()).getBaseColor().getColor();
+						if (isBannerMissing(nearestActiveSiege.getFlagLocation()))
+							replaceMissingBanner(nearestActiveSiege.getFlagLocation());
+						Color bannerColor = ((Banner) nearestActiveSiege.getFlagLocation().getBlock().getState()).getBaseColor().getColor();
 						CosmeticUtil.spawnFirework(deadPlayer.getLocation().add(0, 2, 0), Color.RED, bannerColor, true);
 					}
 
-					if(confirmedCandidateSiegePlayerSide == SiegeSide.DEFENDERS) {
+					if(siegePlayerSide == SiegeSide.DEFENDERS) {
 						SiegeWarScoringUtil.awardPenaltyPoints(
 								false,
 								deadPlayer,
 								deadResident,
-								confirmedCandidateSiege,
+								nearestActiveSiege,
 								Translation.of("msg_siege_war_defender_death"));
 					} else {
 						SiegeWarScoringUtil.awardPenaltyPoints(
 								true,
 								deadPlayer,
 								deadResident,
-								confirmedCandidateSiege,
+								nearestActiveSiege,
 								Translation.of("msg_siege_war_attacker_death"));
 					}
 				}
@@ -148,8 +124,8 @@ public class PlayerDeath {
 				keepInventory(playerDeathEvent);
 				SiegeHUDManager.updateHUDs();
 
-				if(confirmedCandidateSiege.getBannerControlSessions().containsKey(deadPlayer)) { //If the player that died had an ongoing session, remove it.
-					confirmedCandidateSiege.removeBannerControlSession(confirmedCandidateSiege.getBannerControlSessions().get(deadPlayer));
+				if(nearestActiveSiege.getBannerControlSessions().containsKey(deadPlayer)) { //If the player that died had an ongoing session, remove it.
+					nearestActiveSiege.removeBannerControlSession(nearestActiveSiege.getBannerControlSessions().get(deadPlayer));
 					String errorMessage = SiegeWarSettings.isTrapWarfareMitigationEnabled() ? Translation.of("msg_siege_war_banner_control_session_failure_with_altitude") : Translation.of("msg_siege_war_banner_control_session_failure");
 					Messaging.sendMsg(deadPlayer, errorMessage);
 				}

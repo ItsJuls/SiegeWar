@@ -541,11 +541,20 @@ public class SiegeController {
 		}
 	}
 
+	/**
+	 * This method gets the nearest active siege at the given location.
+	 *
+	 * If there are no active sieges at the given location,
+	 * it returns null
+	 *
+	 * @param location the location
+	 * @return the nearest siege
+	 */
 	@Nullable
-	public Siege getNearestActiveSiegeAt(Location location) {
+	public static Siege getNearestActiveSiegeAt(Location location) {
 		Siege resultSiege = null;
-		double resultSiegeDistanceToPlayer = 0;
-		double candidateSiegeDistanceToPlayer;
+		double resultSiegeDistanceFromGivenLocation = 0;
+		double candidateSiegeDistanceFromGivenLocation;
 
 		//Find nearest eligible siege, if any
 		for (Siege candidateSiege : SiegeController.getSieges()) {
@@ -559,10 +568,10 @@ public class SiegeController {
 				continue;
 
 			//Set candidate siege as the result if it is 1st viable one OR closer than current result siege
-			candidateSiegeDistanceToPlayer = location.distance(candidateSiege.getFlagLocation());
-			if (resultSiege == null || candidateSiegeDistanceToPlayer < resultSiegeDistanceToPlayer) {
+			candidateSiegeDistanceFromGivenLocation = location.distance(candidateSiege.getFlagLocation());
+			if (resultSiege == null || candidateSiegeDistanceFromGivenLocation < resultSiegeDistanceFromGivenLocation) {
 				resultSiege = candidateSiege;
-				resultSiegeDistanceToPlayer = candidateSiegeDistanceToPlayer;
+				resultSiegeDistanceFromGivenLocation = candidateSiegeDistanceFromGivenLocation;
 			}
 		}
 		return resultSiege;

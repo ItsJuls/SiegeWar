@@ -2,12 +2,22 @@ package com.gmail.goosius.siegewar.listeners;
 
 import com.gmail.goosius.siegewar.SiegeController;
 import com.gmail.goosius.siegewar.SiegeWar;
-import com.gmail.goosius.siegewar.utils.SiegeWarDistanceUtil;
+import com.gmail.goosius.siegewar.enums.SiegeSide;
+import com.gmail.goosius.siegewar.objects.Siege;
+import com.gmail.goosius.siegewar.utils.SiegeWarAllegianceUtil;
+import com.palmergames.bukkit.towny.TownyUniverse;
+import com.palmergames.bukkit.towny.object.Resident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.inventivetalent.nicknamer.api.event.disguise.NickDisguiseEvent;
 
+import java.awt.Color;
+
 public class SiegeWarNickNamerListener implements Listener {
+
+    public static final Color FRIEND_COLOR = Color.getHSBColor(0.00f,0.28f,0.73f);
+    public static final Color ENEMY_COLOR = Color.getHSBColor(1.00f,0.16f,0.00f);
+    public static final Color NEUTRAL_COLOR = Color.getHSBColor(0.70f,0.75f,0.71f);
 
     @SuppressWarnings("unused")
     private final SiegeWar plugin;
@@ -28,15 +38,76 @@ public class SiegeWarNickNamerListener implements Listener {
      */
     @EventHandler
     public void on(NickDisguiseEvent event) {
-        //Todo - to poeple of the same faction, show the normal skin
-        //todo - to people of the oppising faction, show the other skin
+        try {
+            Siege siege = SiegeController.getNearestActiveSiegeAt(event.getReceiver().getLocation());
 
-        SiegeController.getActiveSiegesAt()
+            if (siege != null) {
+                SiegeSide receiverResidentSiegeSide;
+                SiegeSide targetResidentSiegeSide;
+                Resident receiverResident;
+                Resident targetResident;
 
-        if(SiegeWarDistanceUtil.isInSiegeZone())
-        Player player = event.getReceiver()
-        System.out.println("Nick disguise event called");
-        event.setNick("Poopoopoo");
+                //Get the siege side of the receiver
+                receiverResident = TownyUniverse.getInstance().getResident(event.getReceiver().getUniqueId());
+                if (receiverResident.hasTown()) {
+                    receiverResidentSiegeSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(event.getReceiver(), receiverResident.getTown(), siege);
+                } else {
+                    receiverResidentSiegeSide = SiegeSide.NOBODY;
+                }
+
+                //Get the siege side of the target
+                if (event.getPlayer() == null) {
+                    return;
+                } else {
+                    targetResident = TownyUniverse.getInstance().getResident(event.getPlayer().getUniqueId());
+                    if (targetResident.hasTown()) {
+                        targetResidentSiegeSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(event.getPlayer(), targetResident.getTown(), siege);
+                    } else {
+                        targetResidentSiegeSide = SiegeSide.NOBODY;
+                    }
+                }
+
+                //Resolve colour changes
+                switch(receiverResidentSiegeSide) {
+                    case ATTACKERS:
+                        /*
+                         * If receiver is an attacker, they see:
+                         * Attacker - blue
+                         * Defender - red
+                         * Nobody -grey
+                         */
+                        switch (targetResidentSiegeSide) {
+                            case ATTACKERS:
+                                event.setNick(FRIEND_COLOR + targetResident.getName());
+                            case DEFENDERS:
+                                event.setNick(ENEMY_COLOR + targetResident.getName());
+                            case NOBODY:
+                                event.setNick(NEUTRAL_COLOR + targetResident.getName());
+                        }
+                    break;
+                    case DEFENDERS:
+                    case NOBODY:
+                        /*
+                         * If receiver is on neither side, they see:
+                         * Attacker - red
+                         * Defender - blue
+                         * Nobody -grey
+                         */
+                        switch (targetResidentSiegeSide) {
+                            case ATTACKERS:
+                                event.setNick(ENEMY_COLOR + targetResident.getName());
+                            case DEFENDERS:
+                                event.setNick(FRIEND_COLOR + targetResident.getName());
+                            case NOBODY:
+                                event.setNick(NEUTRAL_COLOR + targetResident.getName());
+                        }
+                        break;
+                }
+            }
+        } catch(Throwable t){
+            System.out.println("Problem changing soldier colours view by player " + event.getReceiver().getName());
+            t.printStackTrace();
+        }
     }
 
 }
