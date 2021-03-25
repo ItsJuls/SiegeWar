@@ -86,7 +86,6 @@ public class PlayerDeath {
 			 * If so, apply a siege point penalty & keep inventory with degrade.
 			 */
 			if (nearestActiveSiege != null) {
-
 				//Is player eligible ?
 				Town deadResidentTown = deadResident.getTown();
 				SiegeSide siegePlayerSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(deadPlayer, deadResidentTown, nearestActiveSiege);
