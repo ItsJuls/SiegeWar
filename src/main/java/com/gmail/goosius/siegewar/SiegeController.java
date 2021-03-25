@@ -16,8 +16,7 @@ import com.gmail.goosius.siegewar.enums.SiegeType;
 import com.gmail.goosius.siegewar.events.SiegeWarStartEvent;
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.gmail.goosius.siegewar.settings.Translation;
-import com.gmail.goosius.siegewar.utils.CosmeticUtil;
-import com.gmail.goosius.siegewar.utils.SiegeWarDistanceUtil;
+import com.gmail.goosius.siegewar.utils.*;
 import com.palmergames.bukkit.towny.TownyEconomyHandler;
 import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -33,9 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import com.gmail.goosius.siegewar.enums.SiegeSide;
 import com.gmail.goosius.siegewar.metadata.SiegeMetaDataController;
 import com.gmail.goosius.siegewar.objects.Siege;
-import com.gmail.goosius.siegewar.utils.SiegeWarMoneyUtil;
-import com.gmail.goosius.siegewar.utils.SiegeWarTimeUtil;
-import com.gmail.goosius.siegewar.utils.SiegeWarTownUtil;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -543,5 +539,32 @@ public class SiegeController {
 				}
 				break;
 		}
+	}
+
+	@Nullable
+	public Siege getNearestActiveSiegeAt(Location location) {
+		Siege resultSiege = null;
+		double resultSiegeDistanceToPlayer = 0;
+		double candidateSiegeDistanceToPlayer;
+
+		//Find nearest eligible siege, if any
+		for (Siege candidateSiege : SiegeController.getSieges()) {
+
+			//Skip if siege is not active
+			if (!candidateSiege.getStatus().isActive())
+				continue;
+
+			//Skip if location is not is siege-zone
+			if(!SiegeWarDistanceUtil.isInSiegeZone(location, candidateSiege))
+				continue;
+
+			//Set candidate siege as the result if it is 1st viable one OR closer than current result siege
+			candidateSiegeDistanceToPlayer = location.distance(candidateSiege.getFlagLocation());
+			if (resultSiege == null || candidateSiegeDistanceToPlayer < resultSiegeDistanceToPlayer) {
+				resultSiege = candidateSiege;
+				resultSiegeDistanceToPlayer = candidateSiegeDistanceToPlayer;
+			}
+		}
+		return resultSiege;
 	}
 }

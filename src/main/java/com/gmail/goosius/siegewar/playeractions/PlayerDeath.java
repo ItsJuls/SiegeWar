@@ -99,7 +99,7 @@ public class PlayerDeath {
 					continue;
 
 				//Is player eligible ?
-				candidateSiegePlayerSide = SiegeWarAllegianceUtil.calculateCandidateSiegePlayerSide(deadPlayer, deadResidentTown, candidateSiege);
+				candidateSiegePlayerSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(deadPlayer, deadResidentTown, candidateSiege);
 
 				if(candidateSiegePlayerSide == SiegeSide.NOBODY)
 					continue;

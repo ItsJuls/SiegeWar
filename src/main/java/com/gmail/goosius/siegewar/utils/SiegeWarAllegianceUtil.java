@@ -12,11 +12,12 @@ import org.bukkit.entity.Player;
 
 public class SiegeWarAllegianceUtil {
 
-    public static SiegeSide calculateCandidateSiegePlayerSide(Player deadPlayer, Town deadResidentTown, Siege candidateSiege) throws NotRegisteredException {
+    //Calculate the siege-side which a player is on
+    public static SiegeSide calculateSiegePlayerSide(Player deadPlayer, Town deadResidentTown, Siege siege) throws NotRegisteredException {
 
         //Look for defender
-        Government defendingGovernment = candidateSiege.getDefender();
-        switch (candidateSiege.getSiegeType()) {
+        Government defendingGovernment = siege.getDefender();
+        switch (siege.getSiegeType()) {
             case CONQUEST:
             case SUPPRESSION:
                 //In the above sieges, defenders can be town guards
@@ -30,8 +31,8 @@ public class SiegeWarAllegianceUtil {
         }
 
         //Look for attacker
-        Government attackingGovernment = candidateSiege.getAttacker();
-        switch (candidateSiege.getSiegeType()) {
+        Government attackingGovernment = siege.getAttacker();
+        switch (siege.getSiegeType()) {
             case REVOLT:
                 //In the above sieges, attackers can be town guards
                 if (isTownGuard(deadPlayer, deadResidentTown, attackingGovernment))
