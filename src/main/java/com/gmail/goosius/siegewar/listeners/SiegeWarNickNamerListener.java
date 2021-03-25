@@ -44,10 +44,10 @@ public class SiegeWarNickNamerListener implements Listener {
             if (siege != null) {
                 SiegeSide receiverResidentSiegeSide;
                 SiegeSide targetResidentSiegeSide;
-                Resident receiverResident;
-                Resident targetResident;
+                Resident receiverResident; //The player doing the looking
+                Resident targetResident; //The player being looked at
 
-                //Get the siege side of the receiver
+                //Get the siege side of the receiver player
                 receiverResident = TownyUniverse.getInstance().getResident(event.getReceiver().getUniqueId());
                 if (receiverResident.hasTown()) {
                     receiverResidentSiegeSide = SiegeWarAllegianceUtil.calculateSiegePlayerSide(event.getReceiver(), receiverResident.getTown(), siege);
@@ -55,7 +55,7 @@ public class SiegeWarNickNamerListener implements Listener {
                     receiverResidentSiegeSide = SiegeSide.NOBODY;
                 }
 
-                //Get the siege side of the target
+                //Get the siege side of the target player
                 if (event.getPlayer() == null) {
                     return;
                 } else {
