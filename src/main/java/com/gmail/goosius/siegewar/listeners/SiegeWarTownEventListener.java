@@ -8,7 +8,6 @@ import com.gmail.goosius.siegewar.enums.SiegeType;
 import com.gmail.goosius.siegewar.objects.BattleSession;
 import com.palmergames.bukkit.towny.TownyEconomyHandler;
 import com.palmergames.bukkit.towny.object.Nation;
-import net.md_5.bungee.chat.SelectorComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -437,6 +436,8 @@ public class SiegeWarTownEventListener implements Listener {
 					case ATTACKER_WIN:
 					case DEFENDER_SURRENDER:
 						return getPlunderStatusLine(siege) + getInvadeStatusLine(siege);
+					default:
+						break;
 				}
 				break;
 			case SUPPRESSION:
@@ -444,6 +445,8 @@ public class SiegeWarTownEventListener implements Listener {
 					case ATTACKER_WIN:
 					case DEFENDER_SURRENDER:
 						return getPlunderStatusLine(siege);
+					default:
+						break;
 				}
 				break;
 			case REVOLT:
@@ -451,6 +454,8 @@ public class SiegeWarTownEventListener implements Listener {
 					case DEFENDER_WIN:
 					case ATTACKER_ABANDON:
 						return getPlunderStatusLine(siege);
+					default:
+						break;
 				}
 				break;
 		}
