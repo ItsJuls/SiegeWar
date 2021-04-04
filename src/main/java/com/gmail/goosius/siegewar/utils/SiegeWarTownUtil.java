@@ -1,5 +1,7 @@
 package com.gmail.goosius.siegewar.utils;
 
+import com.gmail.goosius.siegewar.SiegeController;
+import com.gmail.goosius.siegewar.listeners.SiegeWarCannonsListener;
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownySettings;
@@ -67,14 +69,17 @@ public class SiegeWarTownUtil {
 
 	public static void warnPlayersInBesiegedTownArenaPlots() {
 		for(Player player: Bukkit.getServer().getOnlinePlayers()) {
-			Location loc = player.getLocation();
-			TownBlock tb = TownyAPI.getInstance().getTownBlock(loc);
+			Location playerLocation = player.getLocation();
+			TownBlock townBlockAtPlayerLocation = TownyAPI.getInstance().getTownBlock(playerLocation);
 
-			if (tb != null &&
-				tb.hasTown() &&
-				TownySettings.getKeepInventoryInArenas()
-				&& tb.getType() == TownBlockType.ARENA) {
+			if (townBlockAtPlayerLocation != null
+				&& townBlockAtPlayerLocation.hasTown()
+				&& TownySettings.getKeepInventoryInArenas()
+				&& townBlockAtPlayerLocation.getType() == TownBlockType.ARENA
+				&& SiegeWarDistanceUtil.isLocationInActiveSiegeZone(playerLocation)) {
+
 				//Warn player now TODO
+				//"Arena-inventory-protection is deactivated at this location because you are in a siege zone".
 				throw new RuntimeException("MISSING EXCEPTION");
 			}
 		}
