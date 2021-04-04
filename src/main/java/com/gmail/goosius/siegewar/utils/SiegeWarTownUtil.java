@@ -2,9 +2,13 @@ package com.gmail.goosius.siegewar.utils;
 
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownBlockType;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
  * Util class containing methods related to town flags/permssions.
@@ -59,5 +63,20 @@ public class SiegeWarTownUtil {
 			town.getPermissions().pvp = desiredSetting;
 			town.save();
 		}
-	}	
+	}
+
+	public static void warnPlayersInBesiegedTownArenaPlots() {
+		for(Player player: Bukkit.getServer().getOnlinePlayers()) {
+			Location loc = player.getLocation();
+			TownBlock tb = TownyAPI.getInstance().getTownBlock(loc);
+
+			if (tb != null &&
+				tb.hasTown() &&
+				TownySettings.getKeepInventoryInArenas()
+				&& tb.getType() == TownBlockType.ARENA) {
+				//Warn player now TODO
+				throw new RuntimeException("MISSING EXCEPTION");
+			}
+		}
+	}
 }
