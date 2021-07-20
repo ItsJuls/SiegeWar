@@ -72,7 +72,7 @@ public class SiegeWarTimerTaskController {
 	 */
 	public static void evaluateMapHiding() {
 		if (SiegeWarSettings.getWarSiegeMapHidingEnabled()) {
-			SiegeWarDynmapUtil.evaluateMapHiding();
+			SiegeWarMapUtil.evaluateMapHiding();
 		}
 	}
 

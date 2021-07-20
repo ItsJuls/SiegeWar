@@ -7,12 +7,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.dynmap.towny.events.BuildTownMarkerDescriptionEvent;
 
-public class SiegeWarTownyDynmapListener implements Listener {
+public class SiegeWarDynmapTownyListener implements Listener {
 
     @SuppressWarnings("unused")
     private final SiegeWar plugin;
 
-    public SiegeWarTownyDynmapListener(SiegeWar instance) {
+    public SiegeWarDynmapTownyListener(SiegeWar instance) {
         plugin = instance;
     }
 

@@ -5,9 +5,7 @@ import com.gmail.goosius.siegewar.objects.HeldItemsCombination;
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.util.BukkitTools;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -17,13 +15,13 @@ import org.bukkit.metadata.FixedMetadataValue;
  *
  * @author Goosius
  */
-public class SiegeWarDynmapUtil {
+public class SiegeWarMapUtil {
 
 	public static String MAP_HIDING_METADATA_ID = "tacticallyInvisible";
 	public static FixedMetadataValue MAP_HIDING_FIXED_METADATA_VALUE = new FixedMetadataValue(Towny.getPlugin(), true);
 	
 	/**
-	 * Evaluate players to see if they are should be hidden on the dynamp.
+	 * Evaluate players to see if they are should be hidden on the map.
 	 * 
 	 * Players attempting to get banner control are not hidden by this feature.
 	 *

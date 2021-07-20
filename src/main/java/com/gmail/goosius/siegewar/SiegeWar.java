@@ -1,6 +1,7 @@
 package com.gmail.goosius.siegewar;
 
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
+import com.gmail.goosius.siegewar.tasks.Pl3xMapTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -21,7 +22,7 @@ import com.gmail.goosius.siegewar.listeners.SiegeWarSafeModeListener;
 import com.gmail.goosius.siegewar.listeners.SiegeWarTownEventListener;
 import com.gmail.goosius.siegewar.listeners.SiegeWarTownyEventListener;
 import com.gmail.goosius.siegewar.listeners.SiegeWarCannonsListener;
-import com.gmail.goosius.siegewar.listeners.SiegeWarTownyDynmapListener;
+import com.gmail.goosius.siegewar.listeners.SiegeWarDynmapTownyListener;
 
 import java.io.File;
 
@@ -33,7 +34,9 @@ public class SiegeWar extends JavaPlugin {
 	private final static SiegeHUDManager SiegeHudManager = new SiegeHUDManager(plugin);
 	private static boolean siegeWarPluginError = false;
 	private static boolean cannonsPluginIntegrationEnabled = false;
-	private static boolean townyDynmapPluginIntegrationEnabled = false;
+	private static boolean dynmapPluginIntegrationEnabled = false;
+	private static boolean plx3mapPluginIntegrationEnabled = false;
+	private static boolean dynmapTownyPluginIntegrationEnabled = false;
 
 	public static SiegeWar getSiegeWar() {
 		return plugin;
@@ -80,9 +83,37 @@ public class SiegeWar extends JavaPlugin {
 			if (dynmap != null) {
 				System.out.println(prefix + "SiegeWar found Dynmap plugin, enabling Dynmap support.");
 				DynmapTask.setupDynmapAPI((DynmapAPI) dynmap);
-				townyDynmapPluginIntegrationEnabled = true;
+				dynmapPluginIntegrationEnabled = true;
 			} else {
 				System.out.println(prefix + "Dynmap plugin not found.");
+			}
+		}
+		
+		//If dynmap was found, look for Pl3xmap			
+		if(siegeWarPluginError) {
+			System.err.println(prefix + "SiegeWar is in safe mode. Plx3Map integration disabled.");
+		} else if (dynmapPluginIntegrationEnabled) {
+			System.out.println(prefix + "Plx3Map integration not attempted, because dynmap integration is already active.");
+		} else {
+			Plugin plx3Map = Bukkit.getPluginManager().getPlugin("plax3map");
+			if (plx3Map != null) {
+				System.out.println(prefix + "SiegeWar found Plx3Map plugin, enabling Plx3Map support.");
+				Pl3xMapTask.setupDynmapAPI((Plx3Map) plx3Map);
+				plx3mapPluginIntegrationEnabled = true;
+			} else {
+				System.out.println(prefix + "Plx3Map plugin not found.");
+			}
+		}
+
+		if(siegeWarPluginError) {
+			System.err.println(prefix + "SiegeWar is in safe mode. DynmapTowny integration disabled.");
+		} else {
+			Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmaptowny");
+			if (dynmap != null) {
+				System.out.println(prefix + "SiegeWar found DynmapTowny plugin, enabling DynmapTowny support.");
+				dynmapTownyPluginIntegrationEnabled = true;
+			} else {
+				System.out.println(prefix + "DynmapTowny plugin not found.");
 			}
 		}
 
@@ -140,8 +171,8 @@ public class SiegeWar extends JavaPlugin {
 			pm.registerEvents(new SiegeWarNationEventListener(this), this);
 			pm.registerEvents(new SiegeWarTownEventListener(this), this);
 			pm.registerEvents(new SiegeWarPlotEventListener(this), this);
-			if(townyDynmapPluginIntegrationEnabled)
-				pm.registerEvents(new SiegeWarTownyDynmapListener(this), this);
+			if(dynmapTownyPluginIntegrationEnabled)
+				pm.registerEvents(new SiegeWarDynmapTownyListener(this), this);
 			if(cannonsPluginIntegrationEnabled)
 				pm.registerEvents(new SiegeWarCannonsListener(this), this);
 		}

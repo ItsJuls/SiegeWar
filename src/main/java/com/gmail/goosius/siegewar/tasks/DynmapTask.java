@@ -12,7 +12,7 @@ import com.gmail.goosius.siegewar.objects.Siege;
 import com.gmail.goosius.siegewar.settings.Settings;
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.gmail.goosius.siegewar.settings.Translation;
-import com.gmail.goosius.siegewar.utils.SiegeWarDynmapUtil;
+import com.gmail.goosius.siegewar.utils.SiegeWarMapUtil;
 import com.palmergames.bukkit.towny.TownyEconomyHandler;
 import com.palmergames.util.StringMgmt;
 import org.bukkit.Bukkit;
@@ -202,7 +202,7 @@ public class DynmapTask {
         List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
 
         for (Player player : onlinePlayers) {
-            if (player.hasMetadata(SiegeWarDynmapUtil.MAP_HIDING_METADATA_ID)) {
+            if (player.hasMetadata(SiegeWarMapUtil.MAP_HIDING_METADATA_ID)) {
                 dynmapAPI.assertPlayerInvisibility(player, true, SiegeWar.getSiegeWar());
             } else {
                 dynmapAPI.assertPlayerInvisibility(player, false, SiegeWar.getSiegeWar());
