@@ -2,6 +2,7 @@ package com.gmail.goosius.siegewar;
 
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
 import com.gmail.goosius.siegewar.tasks.Pl3xMapTask;
+import net.pl3x.map.api.Pl3xMap;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -83,7 +84,9 @@ public class SiegeWar extends JavaPlugin {
 			if (dynmap != null) {
 				System.out.println(prefix + "SiegeWar found Dynmap plugin, enabling Dynmap support.");
 				DynmapTask.setupDynmapAPI((DynmapAPI) dynmap);
+				DynmapTask.startDynmapTask();
 				dynmapPluginIntegrationEnabled = true;
+				System.out.println(SiegeWar.prefix + "Dynmap support enabled.");
 			} else {
 				System.out.println(prefix + "Dynmap plugin not found.");
 			}
@@ -98,8 +101,10 @@ public class SiegeWar extends JavaPlugin {
 			Plugin plx3Map = Bukkit.getPluginManager().getPlugin("plax3map");
 			if (plx3Map != null) {
 				System.out.println(prefix + "SiegeWar found Plx3Map plugin, enabling Plx3Map support.");
-				Pl3xMapTask.setupDynmapAPI((Plx3Map) plx3Map);
+				Pl3xMapTask.setupTask((Pl3xMap) plx3Map);
+				Pl3xMapTask.startTask();
 				plx3mapPluginIntegrationEnabled = true;
+				System.out.println(SiegeWar.prefix + "Pl3xMap support enabled.");
 			} else {
 				System.out.println(prefix + "Plx3Map plugin not found.");
 			}

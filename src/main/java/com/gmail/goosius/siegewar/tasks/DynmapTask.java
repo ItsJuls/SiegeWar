@@ -62,8 +62,7 @@ public class DynmapTask {
         InputStream png = SiegeWar.getSiegeWar().getResource(Settings.BATTLE_BANNER_FILE_NAME);
         markerapi.createMarkerIcon(BATTLE_BANNER_ICON_ID, "BattleBanner", png);
 
-        startDynmapTask();
-        System.out.println(SiegeWar.prefix + "Dynmap support enabled.");
+        System.out.println("Dynamp task setup");
     }
 
     public static void startDynmapTask() {
@@ -74,6 +73,7 @@ public class DynmapTask {
                 displaySieges();
             }
         }, 40l, 300l);
+        System.out.println("Dynamp task started");
     }
 
     public static void endDynmapTask() {

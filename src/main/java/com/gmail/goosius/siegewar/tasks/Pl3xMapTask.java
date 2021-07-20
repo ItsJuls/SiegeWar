@@ -12,10 +12,10 @@ import com.gmail.goosius.siegewar.settings.Translation;
 import com.gmail.goosius.siegewar.utils.SiegeWarMapUtil;
 import com.palmergames.bukkit.towny.TownyEconomyHandler;
 import com.palmergames.util.StringMgmt;
+import net.pl3x.map.api.Pl3xMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.dynmap.DynmapAPI;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
@@ -26,7 +26,7 @@ import java.util.*;
 
 public class Pl3xMapTask {
 
-    static DynmapAPI dynmapAPI;
+    static Pl3xMap pl3xMapApi;
     static MarkerAPI markerapi;
     static boolean stop;
     static MarkerSet siegeWarMarkerSet;
@@ -35,9 +35,13 @@ public class Pl3xMapTask {
     final static String PEACEFUL_BANNER_ICON_ID = "fire";
     final static String BATTLE_BANNER_ICON_ID = "siegewar.battle";
 
-    public static void setupDynmapAPI(DynmapAPI _api) {
-        dynmapAPI = _api;
+    public static void setupTask(Pl3xMap api) {
+        pl3xMapApi = api;
+        //pl3xMapApi
+        /*
+        
         markerapi = dynmapAPI.getMarkerAPI();
+        
         if (markerapi == null) {
             System.err.println(SiegeWar.prefix + "Error loading dynmap marker API!");
             return;
@@ -61,12 +65,12 @@ public class Pl3xMapTask {
         //Create battle banner marker icon
         InputStream png = SiegeWar.getSiegeWar().getResource(Settings.BATTLE_BANNER_FILE_NAME);
         markerapi.createMarkerIcon(BATTLE_BANNER_ICON_ID, "BattleBanner", png);
-
-        startDynmapTask();
-        System.out.println(SiegeWar.prefix + "Dynmap support enabled.");
+        */
+        //startTask();
+        System.out.println(SiegeWar.prefix + "Plx3 task setup.");
     }
 
-    public static void startDynmapTask() {
+    public static void startTask() {
         stop = false;
         Bukkit.getScheduler().runTaskTimerAsynchronously(SiegeWar.getSiegeWar(), () -> {
             if (!stop) {
@@ -74,6 +78,7 @@ public class Pl3xMapTask {
                 displaySieges();
             }
         }, 40l, 300l);
+        System.out.println(SiegeWar.prefix + "Plx3 task setup.");
     }
 
     public static void endDynmapTask() {
@@ -85,6 +90,7 @@ public class Pl3xMapTask {
      * Also change any icons if required (between peaceful icon & battle icon)
      */
     private static void displaySieges() {
+        /*
         Map<UUID, Marker> townUUDToSiegeMarkerMapCopy = new HashMap<>(townUUDToSiegeMarkerMap);
 
         {
@@ -105,9 +111,8 @@ public class Pl3xMapTask {
                         townUUDToSiegeMarkerMap.remove(townUUID);
 
                     } else if (marker.getMarkerIcon().getMarkerIconID().equals(PEACEFUL_BANNER_ICON_ID)) {
-                        /*
-                         * Change to battle icon if battle is active.
-                         */
+                        
+                         // Change to battle icon if battle is active.          
                         if (BattleSession.getBattleSession().isActive()
                                 && (siege.getAttackerBattlePoints() > 0
                                 || siege.getDefenderBattlePoints() > 0
@@ -117,9 +122,9 @@ public class Pl3xMapTask {
                         }
 
                     } else if (marker.getMarkerIcon().getMarkerIconID().equals(BATTLE_BANNER_ICON_ID)) {
-                        /*
-                         * Change to peaceful icon if battle is no longer active.
-                         */
+                        
+                         //Change to peaceful icon if battle is no longer active.
+                         
                         if (!BattleSession.getBattleSession().isActive()
                                 || (siege.getAttackerBattlePoints() == 0
                                 && siege.getDefenderBattlePoints() == 0
@@ -189,11 +194,12 @@ public class Pl3xMapTask {
                 }
             }
         }
+        */
     }
 
     /**
-     * This method hides players who have the map hiding metadata tag.
-     * It also un-hides players who do not hav it.
+     * This method hides players who have the map hiding metadata tag,
+     * and shows players who do not have it.
      */
     private static void applyMapHidingToPlayers() {
         if (!SiegeWarSettings.getWarSiegeMapHidingEnabled())
@@ -203,9 +209,9 @@ public class Pl3xMapTask {
 
         for (Player player : onlinePlayers) {
             if (player.hasMetadata(SiegeWarMapUtil.MAP_HIDING_METADATA_ID)) {
-                dynmapAPI.assertPlayerInvisibility(player, true, SiegeWar.getSiegeWar());
+                pl3xMapApi.playerManager().hide(player.getUniqueId());
             } else {
-                dynmapAPI.assertPlayerInvisibility(player, false, SiegeWar.getSiegeWar());
+                pl3xMapApi.playerManager().show(player.getUniqueId());
             }
         }
     }
