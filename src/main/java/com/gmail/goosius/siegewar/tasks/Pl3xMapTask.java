@@ -1,42 +1,87 @@
 package com.gmail.goosius.siegewar.tasks;
 
-import com.gmail.goosius.siegewar.SiegeController;
 import com.gmail.goosius.siegewar.SiegeWar;
-import com.gmail.goosius.siegewar.enums.SiegeSide;
-import com.gmail.goosius.siegewar.enums.SiegeStatus;
-import com.gmail.goosius.siegewar.objects.BattleSession;
-import com.gmail.goosius.siegewar.objects.Siege;
-import com.gmail.goosius.siegewar.settings.Settings;
+import com.gmail.goosius.siegewar.settings.ConfigNodes;
 import com.gmail.goosius.siegewar.settings.SiegeWarSettings;
-import com.gmail.goosius.siegewar.settings.Translation;
 import com.gmail.goosius.siegewar.utils.SiegeWarMapUtil;
-import com.palmergames.bukkit.towny.TownyEconomyHandler;
-import com.palmergames.util.StringMgmt;
-import net.pl3x.map.api.Pl3xMap;
+import net.pl3x.map.api.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
-import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pl3xMapTask {
 
-    static Pl3xMap pl3xMapApi;
-    static MarkerAPI markerapi;
+    static Plugin pl3xMapPlugin;
+    private static final Map<String, SimpleLayerProvider> worldProviders = new ConcurrentHashMap<>();
     static boolean stop;
-    static MarkerSet siegeWarMarkerSet;
-    static MarkerSet townyMarkerSet;
-    static Map<UUID, Marker> townUUDToSiegeMarkerMap = new HashMap<>();
+    private static Map<UUID, Marker> townUUDToSiegeMarkerMap = new HashMap<>();
     final static String PEACEFUL_BANNER_ICON_ID = "fire";
     final static String BATTLE_BANNER_ICON_ID = "siegewar.battle";
 
-    public static void setupTask(Pl3xMap api) {
-        pl3xMapApi = api;
+    public static void setupTask(Plugin plugin) {
+        pl3xMapPlugin = plugin;
+
+        // Load world providers
+        
+        //Setup the siegewar layer
+        Pl3xMap api = Pl3xMapProvider.get();
+        for (String worldName : SiegeWarSettings.getWarSiegeWorlds()) {
+        
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                SiegeWar.getSiegeWar().getLogger().severe("Error accessing world " + worldName + "!");
+                continue;
+            }
+
+            MapWorld mapWorld = api.getWorldIfEnabled(world).orElse(null);
+            if (mapWorld == null) {
+                SiegeWar.getSiegeWar().getLogger().severe(worldName + " is not an enabled world for Pl3xMap!");
+                continue;
+            }
+
+            SimpleLayerProvider siegeWarLayerProvider = 
+                SimpleLayerProvider
+                .builder("SiegeWar")
+                .showControls(true)
+                .defaultHidden(false)
+                .layerPriority(5)
+                .zIndex(250)
+                .build();
+            
+            mapWorld.layerRegistry().register(Key.of("siegewar"), siegeWarLayerProvider);
+            worldProviders.put(world.getName(), siegeWarLayerProvider);
+        }
+
+        //Load the dormant siege icon
+        BufferedImage dormantSiegeIcon = plugin.config().loadTownIcon(plugin.getLogger());
+        if (dormantSiegeIcon != null)
+            api.iconRegistry().register( Key.of("siegewar_dormant_siege"), dormantSiegeIcon);
+            
+        //Load the active siege icon
+        BufferedImage activeSiegeIcon = plugin.config().loadTownIcon(plugin.getLogger());
+        if (activeSiegeIcon != null)
+            api.iconRegistry().register( Key.of("siegewar_active_siege"), activeSiegeIcon);
+
+
+            
+             Key.of("towny_town_icon");
+
+        //pl3xMapPlugin = plugin;
+        //Pl3xMap 
         //pl3xMapApi
         /*
         
@@ -90,10 +135,18 @@ public class Pl3xMapTask {
      * Also change any icons if required (between peaceful icon & battle icon)
      */
     private static void displaySieges() {
+
+
+
         /*
         Map<UUID, Marker> townUUDToSiegeMarkerMapCopy = new HashMap<>(townUUDToSiegeMarkerMap);
 
         {
+        
+        
+        
+        
+        
             //Cleanup current siege markers
             UUID townUUID = null;
             Marker marker = null;
@@ -209,10 +262,27 @@ public class Pl3xMapTask {
 
         for (Player player : onlinePlayers) {
             if (player.hasMetadata(SiegeWarMapUtil.MAP_HIDING_METADATA_ID)) {
-                pl3xMapApi.playerManager().hide(player.getUniqueId());
+                pl3xMapPlugin.playerManager().hide(player.getUniqueId());
             } else {
-                pl3xMapApi.playerManager().show(player.getUniqueId());
+                pl3xMapPlugin.playerManager().show(player.getUniqueId());
             }
         }
     }
+    
+        private BufferedImage loadIcon(String type, String urlStr, Logger errorLogger) {
+            URL url;
+            try {
+                url = new URL(urlStr);
+            } catch (MalformedURLException ex) {
+                errorLogger.log(Level.SEVERE, "Cannot load " + type + " icon due to an invalid URL!", ex);
+                return null;
+            }
+        
+            try {
+                return ImageIO.read(url);
+            } catch (IOException e) {
+                errorLogger.log(Level.SEVERE, "Error while loading " + type + " image icon!", e);
+                return null;
+            }
+        }
 }

@@ -98,10 +98,10 @@ public class SiegeWar extends JavaPlugin {
 		} else if (dynmapPluginIntegrationEnabled) {
 			System.out.println(prefix + "Plx3Map integration not attempted, because dynmap integration is already active.");
 		} else {
-			Plugin plx3Map = Bukkit.getPluginManager().getPlugin("plax3map");
-			if (plx3Map != null) {
+			Plugin plx3MapPlugin = Bukkit.getPluginManager().getPlugin("plax3map");
+			if (plx3MapPlugin != null) {
 				System.out.println(prefix + "SiegeWar found Plx3Map plugin, enabling Plx3Map support.");
-				Pl3xMapTask.setupTask((Pl3xMap) plx3Map);
+				Pl3xMapTask.setupTask(plx3MapPlugin);
 				Pl3xMapTask.startTask();
 				plx3mapPluginIntegrationEnabled = true;
 				System.out.println(SiegeWar.prefix + "Pl3xMap support enabled.");
