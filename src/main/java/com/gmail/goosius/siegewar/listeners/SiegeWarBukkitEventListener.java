@@ -168,7 +168,7 @@ public class SiegeWarBukkitEventListener implements Listener {
 			return;
 		
 		if (SiegeWarSettings.getWarSiegeEnabled()
-			&& SiegeWarSettings.getWarSiegeNonResidentSpawnIntoSiegeZonesOrBesiegedTownsDisabled()
+			&& SiegeWarSettings.getBlockIncomingSiegeZoneTeleports()
 			&& (event.getCause() == TeleportCause.PLUGIN || event.getCause() == TeleportCause.COMMAND)) {
 			if (TownyAPI.getInstance().isWilderness(event.getTo())) { // The teleport destination is in the wilderness.
 				if (SiegeWarDistanceUtil.isLocationInActiveSiegeZone(event.getTo())) {
@@ -181,13 +181,6 @@ public class SiegeWarBukkitEventListener implements Listener {
 
 				if (destinationTown.hasResident(resident))
 					return;
-
-				//Check IF TP destination is a besieged town
-				if(SiegeController.hasActiveSiege(destinationTown)) {
-					Messaging.sendErrorMsg(event.getPlayer(), Translatable.of("msg_err_siege_war_cannot_spawn_into_siegezone_or_besieged_town"));
-					event.setCancelled(true);
-					return;
-				}
 
 				//Check if the destination is inside a siege zone
 				if (SiegeWarDistanceUtil.isLocationInActiveSiegeZone(event.getTo())) {

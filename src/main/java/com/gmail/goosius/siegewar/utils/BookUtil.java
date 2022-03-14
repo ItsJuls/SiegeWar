@@ -115,7 +115,7 @@ public class BookUtil {
 		text += "\nSIEGE AREA EFFECTS\n\n";
 		if (SiegeWarSettings.getWarSiegeClaimingDisabledNearSiegeZones())
 			text += "No towns will be able to claim land near to Siege Zones.\n";
-		if (SiegeWarSettings.getWarSiegeNonResidentSpawnIntoSiegeZonesOrBesiegedTownsDisabled())
+		if (SiegeWarSettings.getBlockIncomingSiegeZoneTeleports())
 			text += "Only residents and peaceful town residents will be able to use towny spawn commands to spawn into siege zones.\n";
 		if (SiegeWarSettings.getWarSiegeBesiegedTownClaimingDisabled())
 			text += "Besieged towns are unable to claim land.\n";
