@@ -912,7 +912,7 @@ public enum ConfigNodes {
 			""),
 	ENABLE_SICKNESS(
 			"punish_non_siege_participants_in_siege_zone.enable_sickness",
-			"false",
+			"true",
 			"",
 			"# If true, players that are not participating in a siege will receive war sickness",
 			"# A non-participant is a player who does not have a military rank, is not allied to either the attacker or the defender, or is neutral.",
@@ -920,11 +920,11 @@ public enum ConfigNodes {
 			"# Special war sickness is only given if a non-participant is at his town that happened to be in a siege zone",
 			"#   - Effects: Weakness V",
 			"# Full sickness is given to all players that are not allied to either side, do not have a military rank, or is neutral, and are not in their own town.",
-			"#   - Effects: Nausea V, Poison V, Weakness V, Slowness III, Mining Fatigue III"
+			"#   - Effects: Health set to 1, Nausea V, Poison V, Weakness V, Slowness III, Mining Fatigue III"
 	),
 	SECONDS_BEFORE_SICKNESS(
 			"punish_non_siege_participants_in_siege_zone.seconds_warning",
-			"5",
+			"20",
 			"",
 			"# This is how many seconds a player has to leave the siege zone before he gets war sickness",
 			"# If this is set to 0, no warn will be given and non-participants will receive war sickness instantly, if enabled"
