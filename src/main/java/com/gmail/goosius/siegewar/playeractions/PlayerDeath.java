@@ -67,9 +67,7 @@ public class PlayerDeath {
 			|| !TownyAPI.getInstance().getTownyWorld(world).isWarAllowed())
 			return;
 
-		TownyPermissionSource tps = TownyUniverse.getInstance().getPermissionSource();
 		Resident deadResident = TownyUniverse.getInstance().getResident(deadPlayer.getUniqueId());
-
 		if (deadResident == null || !deadResident.hasTown())
 			return;
 
@@ -77,8 +75,10 @@ public class PlayerDeath {
 		 * Do an early permission test to avoid hitting the sieges list if
 		 * it could never return a proper SiegeSide.
 		 */
-		if (!tps.testPermission(deadPlayer, SiegeWarPermissionNodes.SIEGEWAR_TOWN_SIEGE_BATTLE_POINTS.getNode())
-			&& !tps.testPermission(deadPlayer, SiegeWarPermissionNodes.SIEGEWAR_NATION_SIEGE_BATTLE_POINTS.getNode()))
+		TownyPermissionSource tps = TownyUniverse.getInstance().getPermissionSource();
+		boolean guard = tps.testPermission(deadPlayer, SiegeWarPermissionNodes.SIEGEWAR_TOWN_SIEGE_BATTLE_POINTS.getNode());
+		boolean soldier = tps.testPermission(deadPlayer, SiegeWarPermissionNodes.SIEGEWAR_NATION_SIEGE_BATTLE_POINTS.getNode());
+		if(!guard && !soldier)
 			return;
 
 		//Get nearest active siege
@@ -86,18 +86,20 @@ public class PlayerDeath {
 		if(siege == null)
 			return;
 
-		//Keep and degrade inventory
-		degradeInventory(playerDeathEvent);
-		keepInventory(playerDeathEvent);
-		//Keep level
-		keepLevel(playerDeathEvent);
+		Town deadResidentTown = deadResident.getTownOrNull();
+		if(soldier || siege.getTown().equals(deadResidentTown)) {
+			//Keep and degrade inventory
+			degradeInventory(playerDeathEvent);
+			keepInventory(playerDeathEvent);
+			//Keep level
+			keepLevel(playerDeathEvent);
+		}
 
 		//Return if siege is not in progress
 		if(siege.getStatus() != SiegeStatus.IN_PROGRESS)
 			return;
 
 		//Return if player is ineligible for penalty points
-		Town deadResidentTown = deadResident.getTownOrNull();
 		SiegeSide playerSiegeSide = SiegeWarAllegianceUtil.calculateCandidateSiegePlayerSide(deadPlayer, deadResidentTown, siege);
 		if(playerSiegeSide == SiegeSide.NOBODY)
 			return;
